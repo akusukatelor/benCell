@@ -22,17 +22,23 @@ return view('products.create', compact('categories'));
 
 public function store(Request $request)
 {
-    $validated = $request->validate([
-        'name' => 'required|string|max:255',
-        'price' => 'required|numeric',
+    $request->validate([
+        'name' => 'required',
         'stock' => 'required|integer',
-        'category_id' => 'nullable|exists:categories,id',
+        'cost_price' => 'required|numeric',
+        'sell_price' => 'required|numeric',
+        'category_id' => 'required|exists:categories,id'
     ]);
 
-    Product::create($validated);
+    $data = $request->all();
+    $data['sku'] = 'SKU' . time(); // contoh generate SKU otomatis
 
-    return redirect()->route('products.index')->with('success', 'Produk berhasil ditambahkan!');
+    Product::create($data);
+
+    return redirect()->route('products.index')
+                     ->with('success', 'Produk berhasil ditambahkan');
 }
+
 
 
 

@@ -18,6 +18,10 @@
     <label>Harga</label>
     <input type="number" name="price" class="form-control" required>
   </div>
+  <div class="form-group">
+    <label>Kategori</label>
+    <input type="text" name="name" class="form-control" required>
+  </div>
   <button class="btn btn-success">Simpan</button>
 </form>
 @endsection
