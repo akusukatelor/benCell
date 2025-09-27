@@ -16,8 +16,8 @@
             <input type="text" name="customer_phone" class="form-control" required>
         </div>
         <div class="form-group mb-2">
-            <label>Jenis Service</label>
-            <input type="text" name="service_type" class="form-control" required>
+            <label>Keluhan</label>
+            <input type="text" name="problem" class="form-control" required>
         </div>
         <div class="form-group mb-2">
             <label>Status</label>
@@ -27,6 +27,15 @@
                 <option value="selesai">Selesai</option>
             </select>
         </div>
+        <div class="form-group">
+            <label for="device">Device</label>
+            <input type="text" name="device" id="device" class="form-control" required>
+        </div>
+        <div class="form-group mb-2">
+            <label>Estimasi Biaya</label>
+            <input type="number" name="estimated_cost" class="form-control" required>
+        </div>
+
         <button class="btn btn-success">Simpan</button>
     </form>
 </div>

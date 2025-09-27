@@ -14,7 +14,7 @@ return new class extends Migration
             $table->string('customer_phone');
             $table->string('device');
             $table->text('problem');
-            $table->enum('status', ['incoming', 'in_progress', 'completed'])->default('incoming');
+            $table->enum('status', ['pending','proses','selesai'])->default('pending');
             $table->decimal('estimated_cost', 12, 2)->nullable();
             $table->timestamps();
         });

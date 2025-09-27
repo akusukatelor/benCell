@@ -3,9 +3,9 @@
 @section('title','Tambah Produk')
 
 @section('content')
-<h2>Tambah Produk</h2>
-<form action="{{ route('products.store') }}" method="POST">
-  @csrf
+<h2>Edit Produk</h2>
+<form action="{{ route('products.update', $product->id) }}" method="POST">
+  @csrf @method('PUT')
   <div class="form-group">
     <label>Nama Produk</label>
     <input type="text" name="name" class="form-control" required>

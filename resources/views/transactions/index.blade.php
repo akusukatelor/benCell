@@ -19,6 +19,7 @@
                 <th>Produk</th>
                 <th>Jumlah</th>
                 <th>Total</th>
+                <th>Catatan</th>
                 <th>Tanggal</th>
                 <th>Aksi</th>
             </tr>
@@ -34,7 +35,10 @@
                 </td>
                 <td>{{ $transaction->product->name ?? '-' }}</td>
                 <td>{{ $transaction->quantity }}</td>
-                <td>{{ $transaction->formatted_total }}</td> {{-- Uses new accessor --}}
+                <td>{{ $transaction->formatted_total }}
+                <td>{{ $transaction->note }}
+
+                </td> {{-- Uses new accessor --}}
                 {{-- Alternative without accessor: <td>Rp{{ number_format($transaction->total, 0, ',', '.') }}</td> --}}
                 <td>{{ $transaction->date->format('d/m/Y H:i') }}</td> {{-- Use custom date field --}}
                 <td>

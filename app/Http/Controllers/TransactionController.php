@@ -79,49 +79,22 @@ class TransactionController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, Transaction $transaction)
-    {
-        $request->validate([
-            'type'   => 'required|in:income,expense',
-            'product_name' => 'required|string|exists:products,name',
-            'quantity' => 'required|integer|min:1',
-            'amount' => 'required|numeric|min:0',
-            'date'   => 'required|date',
-            'note'   => 'nullable|string|max:255',
-        ]);
+    public function update(Request $request, $id)
+{
+    $transaction = Transaction::findOrFail($id);
 
-        // Cari produk baru berdasarkan nama dari form
-        $newProduct = Product::where('name', $request->product_name)->firstOrFail();
+    $request->validate([
+        'product_id' => 'required|exists:products,id',
+        'quantity'   => 'required|integer|min:1',
+        'note'       => 'nullable|string',
+    ]);
 
-        // Rollback stok lama berdasarkan type lama
-        $oldProduct = $transaction->product;  // Gunakan relasi untuk old product
-        if ($oldProduct) {
-            if ($transaction->type === 'income') {
-                $oldProduct->increment('stock', $transaction->quantity);  // Kembalikan stok yang dikurangi
-            } elseif ($transaction->type === 'expense') {
-                $oldProduct->decrement('stock', $transaction->quantity);  // Kurangi stok yang ditambah
-            }
-        }
+    $transaction->update($request->all());
 
-        // Update transaksi dengan data baru
-        $transaction->update([
-            'type' => $request->type,
-            'product_id' => $newProduct->id,  // Update ke ID produk baru
-            'quantity' => $request->quantity,
-            'amount' => $request->amount,
-            'date' => Carbon::parse($request->date),
-            'note' => $request->note,
-        ]);
+    return redirect()->route('transactions.index')
+                     ->with('success', 'Transaksi berhasil diperbarui!');
+}
 
-        // Update stok baru berdasarkan type baru
-        if ($request->type === 'income') {
-            $newProduct->decrement('stock', $request->quantity);
-        } elseif ($request->type === 'expense') {
-            $newProduct->increment('stock', $request->quantity);
-        }
-
-        return redirect()->route('transactions.index')->with('success', 'Transaksi berhasil diperbarui.');
-    }
 
     /**
      * Remove the specified resource from storage.

@@ -12,8 +12,10 @@
                 <th>ID</th>
                 <th>Nama Pelanggan</th>
                 <th>Nomor HP</th>
-                <th>Jenis Service</th>
+                <th>Device</th>
+                <th>Keluhan</th>
                 <th>Status</th>
+                <th>Estimasi Biaya</th>
                 <th>Tanggal Masuk</th>
                 <th>Aksi</th>
             </tr>
@@ -24,8 +26,10 @@
                 <td>{{ $order->id }}</td>
                 <td>{{ $order->customer_name }}</td>
                 <td>{{ $order->customer_phone }}</td>
-                <td>{{ $order->service_type }}</td>
+                <td>{{ $order->device }}</td>
+                <td>{{ $order->problem }}</td>
                 <td>{{ ucfirst($order->status) }}</td>
+                <td>{{ ucfirst($order->estimated_cost) }}</td>
                 <td>{{ $order->created_at->format('d/m/Y H:i') }}</td>
                 <td>
                     <a href="{{ route('service-orders.edit', $order) }}" class="btn btn-warning btn-sm">Edit</a>
