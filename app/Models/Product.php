@@ -10,12 +10,12 @@ use Illuminate\Database\Eloquent\Model;
 class Product extends Model {
 use HasFactory;
 protected $fillable = [
-        'category_id',
         'name',
         'sku',
         'stock',
         'cost_price',
-        'sell_price'
+        'sell_price',
+        'category_id'
     ];
 
 

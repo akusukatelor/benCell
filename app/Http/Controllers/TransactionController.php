@@ -17,8 +17,9 @@ class TransactionController extends Controller
     }
 
     public function create()
-    {
-        return view('transactions.create');
+    {   
+         $products = Product::all();
+        return view('transactions.create', compact('products'));
     }
 
     public function store(Request $request)

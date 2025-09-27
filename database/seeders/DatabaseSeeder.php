@@ -34,7 +34,6 @@ class DatabaseSeeder extends Seeder
             'sell_price' => 50000
         ]);
 
-        // Tambah transaksi
         Transaction::create([
             'type' => 'income',
             'product_id' => $produk->id,
@@ -44,7 +43,6 @@ class DatabaseSeeder extends Seeder
             'date' => now(),
         ]);
 
-        // Tambah service
         ServiceOrder::create([
             'customer_name' => 'Budi',
             'customer_phone' => '08123456789',
