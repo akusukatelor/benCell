@@ -11,25 +11,19 @@ class DashboardController extends Controller
     public function index()
     {
         $totalStock = Product::sum('stock'); 
-        $productsCount = Product::count();
-        $incomeThisMonth = Transaction::where('type','income')->whereMonth('date', now()->month)->sum('amount');
-        $expenseThisMonth = Transaction::where('type','expense')->whereMonth('date', now()->month)->sum('amount');
-        $recentService = ServiceOrder::orderByDesc('created_at')->take(5)->get();
-// atau sesuai nama field yang benar
-
-
+        $productsCount = Product::count();  // Ini sudah benar, akan return 3 jika ada 3 produk
+        
+        // Query income dan expense yang lebih lengkap (sudah include year untuk akurasi)
         $incomeThisMonth = Transaction::where('type', 'income')
             ->whereMonth('date', now()->month)
             ->whereYear('date', now()->year)
             ->sum('amount');
-
         $expenseThisMonth = Transaction::where('type', 'expense')
             ->whereMonth('date', now()->month)
             ->whereYear('date', now()->year)
             ->sum('amount');
-
         $recentService = ServiceOrder::orderByDesc('created_at')->take(5)->get();
-
-        return view('dashboard', compact('totalStock', 'incomeThisMonth', 'expenseThisMonth', 'recentService'));
+        // Tambahkan 'productsCount' ke compact() — INI KUNCI PERBAIKANNYA!
+        return view('dashboard', compact('totalStock', 'productsCount', 'incomeThisMonth', 'expenseThisMonth', 'recentService'));
     }
 }

@@ -19,9 +19,9 @@ class Transaction extends Model
     ];
 
     protected $casts = [
-         'date' => 'datetime',  // Now preserves time (format: Y-m-d H:i:s)
-         'amount' => 'decimal:2',
-     ];
+        'date' => 'datetime',  // Now preserves time (format: Y-m-d H:i:s)
+        'amount' => 'decimal:2',
+    ];
 
     public function product()
     {
