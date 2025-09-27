@@ -67,7 +67,6 @@
 </div>
 
 <script>
-    // JavaScript untuk kalkulasi amount otomatis berdasarkan type
     function calculateAmount() {
         const typeSelect = document.getElementById('type');
         const productSelect = document.getElementById('product_name');
@@ -81,41 +80,41 @@
         const quantity = parseInt(quantityInput.value || 0);
 
         let price = 0;
-        let priceLabel = '';
 
         if (type === 'income' && selectedOption) {
             price = parseFloat(selectedOption.getAttribute('data-sell-price') || 0);
-            priceLabel = 'Harga Jual';
+            amountLabel.textContent = 'Harga Jual';
             amountHelp.textContent = 'Otomatis dihitung: Harga Jual x Quantity';
         } else if (type === 'expense' && selectedOption) {
             price = parseFloat(selectedOption.getAttribute('data-cost-price') || 0);
-            priceLabel = 'Harga Beli';
+            amountLabel.textContent = 'Harga Beli';
             amountHelp.textContent = 'Otomatis dihitung: Harga Beli x Quantity';
         } else {
-            priceLabel = 'Jumlah Uang (Amount)';
+            amountLabel.textContent = 'Jumlah Uang (Amount)';
             amountHelp.textContent = 'Pilih tipe dan produk untuk kalkulasi otomatis.';
         }
 
-        amountLabel.textContent = priceLabel;
-
         if (price > 0 && quantity > 0) {
             const total = price * quantity;
-            amountInput.value = total.toLocaleString('id-ID', { minimumFractionDigits: 0, maximumFractionDigits: 2 });
+            amountInput.value = total; // angka murni tanpa format
         } else {
             amountInput.value = '';
         }
-        document.querySelector('form').addEventListener('submit', function() {
-            const amountInput = document.getElementById('amount');
-            amountInput.value = parseFloat(amountInput.value.replace(/[^\d.]/g, '')) || 0;  // Strip commas/dots, keep decimal
-        });
     }
 
-    // Event listener untuk trigger kalkulasi
+    // Event listener
     document.getElementById('type').addEventListener('change', calculateAmount);
     document.getElementById('product_name').addEventListener('change', calculateAmount);
     document.getElementById('quantity').addEventListener('input', calculateAmount);
 
-    // Trigger awal jika ada value default
+    // Strip format sebelum submit (jaga-jaga kalau ada manipulasi)
+    document.querySelector('form').addEventListener('submit', function () {
+        const amountInput = document.getElementById('amount');
+        amountInput.value = parseFloat(amountInput.value.replace(/[^\d.]/g, '')) || 0;
+    });
+
+    // Jalankan saat halaman pertama kali load
     calculateAmount();
 </script>
+
 @endsection
