@@ -21,7 +21,8 @@ class DashboardController extends Controller
         $expenseThisMonth = Transaction::where('type', 'expense')
             ->whereMonth('date', now()->month)
             ->whereYear('date', now()->year)
-            ->sum('amount');
+            ->get()
+            ->sum->total;
         $recentService = ServiceOrder::orderByDesc('created_at')->take(5)->get();
         // Tambahkan 'productsCount' ke compact() — INI KUNCI PERBAIKANNYA!
         return view('dashboard', compact('totalStock', 'productsCount', 'incomeThisMonth', 'expenseThisMonth', 'recentService'));
