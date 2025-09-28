@@ -11,13 +11,36 @@
 
   <!-- Navbar -->
   <nav class="main-header navbar navbar-expand navbar-white navbar-light">
+    <!-- Left navbar links -->
+    <ul class="navbar-nav">
+        <li class="nav-item">
+            <a class="nav-link" data-widget="pushmenu" href="#"><i class="fas fa-bars"></i></a>
+        </li>
+    </ul>
+
+    <!-- Right navbar links -->
     <ul class="navbar-nav ml-auto">
-      <li class="nav-item">
-        <form action="{{ route('logout') }}" method="POST">
-          @csrf
-          <button type="submit" class="btn btn-danger btn-sm">Logout</button>
-        </form>
-      </li>
+        <!-- Profile Dropdown -->
+        <li class="nav-item dropdown">
+            <a class="nav-link" data-toggle="dropdown" href="#" aria-expanded="false">
+                <img src="{{ Auth::user()->profile_photo_url ?? 'https://via.placeholder.com/30' }}" 
+                     class="img-circle elevation-2" alt="User Image" width="30" height="30">
+                <span>{{ Auth::user()->name }}</span>
+                <i class="fas fa-caret-down ml-1"></i>
+            </a>
+            <div class="dropdown-menu dropdown-menu-right">
+                <a class="dropdown-item" href="{{ route('profile.edit') }}">
+                    <i class="fas fa-user mr-2"></i> Profile
+                </a>
+                <div class="dropdown-divider"></div>
+                <form method="POST" action="{{ route('logout') }}">
+                    @csrf
+                    <button type="submit" class="dropdown-item">
+                        <i class="fas fa-sign-out-alt mr-2"></i> Logout
+                    </button>
+                </form>
+            </div>
+        </li>
     </ul>
   </nav>
 
