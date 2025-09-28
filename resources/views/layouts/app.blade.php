@@ -91,7 +91,7 @@
     <!-- Sidebar (hanya tampil jika sudah login) -->
     @auth
     <aside class="main-sidebar sidebar-dark-primary elevation-4">
-        <a href="{{ route('dashboard') }}" class="brand-link">
+        <a href="{{ route('profile') }}" class="brand-link">
             <span class="brand-text font-weight-light">BEN CELL</span>
         </a>
         <div class="sidebar">
