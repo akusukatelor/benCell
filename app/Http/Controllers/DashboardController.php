@@ -30,6 +30,13 @@ class DashboardController extends Controller
 
         $recentService = ServiceOrder::orderByDesc('created_at')->take(5)->get();
 
-        return view('dashboard', compact('totalStock', 'incomeThisMonth', 'expenseThisMonth', 'recentService'));
+        return view('dashboard', compact(
+    'productsCount',
+    'totalStock',
+    'incomeThisMonth',
+    'expenseThisMonth',
+    'recentService'
+));
+
     }
 }
