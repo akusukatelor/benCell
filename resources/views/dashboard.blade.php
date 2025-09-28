@@ -72,6 +72,7 @@
                 <th>ID</th>
                 <th>Nama Customer</th>
                 <th>Device</th>
+                <th>Keluhan</th>
                 <th>Status</th>
                 <th>Tanggal</th>
               </tr>
@@ -82,6 +83,7 @@
                 <td>{{ $service->id }}</td>
                 <td>{{ $service->customer_name }}</td>
                 <td>{{ $service->device }}</td>
+                <td>{{ $service->problem }}</td>
                 <td>{{ ucfirst($service->status) }}</td>
                 <td>{{ $service->created_at->format('d-m-Y') }}</td>
               </tr>

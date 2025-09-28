@@ -45,9 +45,18 @@
         </div>
 
         <div class="form-group mb-2">
-            <label for="quantity">Jumlah (Quantity)</label>
-            <input type="number" name="quantity" id="quantity" class="form-control" required min="1" value="1">
+    <label for="quantity">Jumlah (Quantity)</label>
+    <input type="number" name="quantity" id="quantity" 
+           class="form-control @error('quantity') is-invalid @enderror"
+           required min="1" value="{{ old('quantity', 1) }}">
+
+    @error('quantity')
+        <div class="invalid-feedback">
+            {{ $message }}
         </div>
+    @enderror
+</div>
+
 
         <div class="form-group mb-2">
             <label for="amount" id="amount-label">Jumlah Uang (Amount)</label>

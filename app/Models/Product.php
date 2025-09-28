@@ -18,6 +18,16 @@ protected $fillable = [
         'category_id'
     ];
 
+public function decrementStock($qty = 1)
+{
+    if ($this->stock >= $qty) {
+        $this->stock -= $qty;
+        $this->save();
+        return true; // sukses
+    }
+    return false; // gagal karena stok habis
+}
+
 
 public function category(){
 return $this->belongsTo(Category::class);
