@@ -45,9 +45,18 @@
         </div>
 
         <div class="form-group mb-2">
-            <label for="quantity">Jumlah (Quantity)</label>
-            <input type="number" name="quantity" id="quantity" class="form-control" required min="1" value="1">
+    <label for="quantity">Jumlah (Quantity)</label>
+    <input type="number" name="quantity" id="quantity" 
+           class="form-control @error('quantity') is-invalid @enderror"
+           required min="1" value="{{ old('quantity', 1) }}">
+
+    @error('quantity')
+        <div class="invalid-feedback">
+            {{ $message }}
         </div>
+    @enderror
+</div>
+
 
         <div class="form-group mb-2">
             <label for="amount" id="amount-label">Jumlah Uang (Amount)</label>
@@ -77,30 +86,25 @@
 
         const type = typeSelect.value;
         const selectedOption = productSelect.selectedOptions[0];
-        const quantity = parseInt(quantityInput.value || 0);
 
         let price = 0;
 
         if (type === 'income' && selectedOption) {
             price = parseFloat(selectedOption.getAttribute('data-sell-price') || 0);
-            amountLabel.textContent = 'Harga Jual';
-            amountHelp.textContent = 'Otomatis dihitung: Harga Jual x Quantity';
+            amountLabel.textContent = 'Harga Jual (per unit)';
+            amountHelp.textContent = 'Total = Harga Jual x Quantity (otomatis di sistem)';
         } else if (type === 'expense' && selectedOption) {
             price = parseFloat(selectedOption.getAttribute('data-cost-price') || 0);
-            amountLabel.textContent = 'Harga Beli';
-            amountHelp.textContent = 'Otomatis dihitung: Harga Beli x Quantity';
+            amountLabel.textContent = 'Harga Beli (per unit)';
+            amountHelp.textContent = 'Total = Harga Beli x Quantity (otomatis di sistem)';
         } else {
             amountLabel.textContent = 'Jumlah Uang (Amount)';
             amountHelp.textContent = 'Pilih tipe dan produk untuk kalkulasi otomatis.';
         }
 
-        if (price > 0 && quantity > 0) {
-            const total = price * quantity;
-            amountInput.value = total; // angka murni tanpa format
-        } else {
-            amountInput.value = '';
-        }
+        amountInput.value = price > 0 ? price : '';
     }
+
 
     // Event listener
     document.getElementById('type').addEventListener('change', calculateAmount);

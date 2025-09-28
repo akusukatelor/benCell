@@ -29,7 +29,7 @@
                 <td>{{ $order->device }}</td>
                 <td>{{ $order->problem }}</td>
                 <td>{{ ucfirst($order->status) }}</td>
-                <td>{{ ucfirst($order->estimated_cost) }}</td>
+                <td>{{ number_format($order->estimated_cost, 0, ',', '.') }}</td>
                 <td>{{ $order->created_at->format('d/m/Y H:i') }}</td>
                 <td>
                     <a href="{{ route('service-orders.edit', $order) }}" class="btn btn-warning btn-sm">Edit</a>

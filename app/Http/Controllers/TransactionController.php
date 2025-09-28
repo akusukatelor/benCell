@@ -32,40 +32,49 @@ class TransactionController extends Controller
      * Store a newly created resource in storage.
      */
     public function store(Request $request)
-    {
-        $request->validate([
-            'type'   => 'required|in:income,expense',
-            'product_name' => 'required|string|exists:products,name',  // Validasi nama dari form
-            'quantity' => 'required|integer|min:1',
-            'amount' => 'required|numeric|min:0',
-            'date'   => 'required|date',
-            'note'   => 'nullable|string|max:255',
-        ]);
+{
+    $request->validate([
+        'type'   => 'required|in:income,expense',
+        'product_name' => 'required|string|exists:products,name',
+        'quantity' => 'required|integer|min:1',
+        'amount' => 'required|numeric|min:0',
+        'date'   => 'required|date',
+        'note'   => 'nullable|string|max:255',
+    ]);
 
-        // Cari produk berdasarkan nama dari form
-        $product = Product::where('name', $request->product_name)->firstOrFail();
+    $product = Product::where('name', $request->product_name)->firstOrFail();
 
-        // Buat transaksi dengan product_id
-        Transaction::create([
-            'type' => $request->type,
-            'product_id' => $product->id,  // Simpan ID produk
-            'quantity' => $request->quantity,
-            'amount' => $request->amount,
-            'date' => Carbon::parse($request->date),  // Parse date untuk format yang aman
-            'note' => $request->note,
-        ]);
-
-        // Update stok berdasarkan type
-        if ($request->type === 'income') {
-            // Income: Penjualan, kurangi stok
-            $product->decrement('stock', $request->quantity);
-        } elseif ($request->type === 'expense') {
-            // Expense: Pembelian, tambah stok
-            $product->increment('stock', $request->quantity);
-        }
-
-        return redirect()->route('transactions.index')->with('success', 'Transaksi berhasil ditambahkan.');
+    // 🔴 Cek stok dulu kalau type income
+    if ($request->type === 'income' && $product->stock < $request->quantity) {
+        return redirect()
+            ->back()
+            ->withInput()
+            ->withErrors([
+                'quantity' => "Stok {$product->name} hanya tersisa {$product->stock} unit.",
+            ]);
     }
+
+    // Simpan transaksi
+    $transaction = Transaction::create([
+        'type'       => $request->type,
+        'product_id' => $product->id,
+        'quantity'   => $request->quantity,
+        'amount'     => $request->amount,
+        'date'       => Carbon::parse($request->date),
+        'note'       => $request->note,
+    ]);
+
+    // Update stok
+    if ($request->type === 'income') {
+        $product->decrement('stock', $request->quantity);
+    } elseif ($request->type === 'expense') {
+        $product->increment('stock', $request->quantity);
+    }
+
+    return redirect()
+        ->route('transactions.index')
+        ->with('success', "Transaksi {$transaction->type} berhasil ditambahkan.");
+}
 
     /**
      * Show the form for editing the specified resource.
