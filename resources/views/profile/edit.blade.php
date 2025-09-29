@@ -68,7 +68,7 @@
         </div>
 
         <button type="submit" class="btn btn-primary">Simpan</button>
-        <a href="{{ route('profile') }}" class="btn btn-secondary">Kembali</a>
+        <a href="{{ route('dashboard') }}" class="btn btn-secondary">Kembali</a>
     </form>
 </div>
 @endsection

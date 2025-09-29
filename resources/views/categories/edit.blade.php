@@ -12,6 +12,7 @@
             <input type="text" name="name" value="{{ $category->name }}" class="form-control" required>
         </div>
         <button class="btn btn-success">Update</button>
+        <a href="{{ route('categories.index') }}" class="btn btn-secondary">Kembali</a>
     </form>
 </div>
 @endsection

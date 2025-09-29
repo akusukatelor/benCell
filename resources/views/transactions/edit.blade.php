@@ -26,6 +26,7 @@
             <textarea name="note" id="note" class="form-control" rows="3" placeholder="Masukkan catatan tambahan..."></textarea>
         </div>
         <button class="btn btn-success">Update</button>
+        <a href="{{ route('transactions.index') }}" class="btn btn-secondary">Kembali</a>
     </form>
 </div>
 @endsection

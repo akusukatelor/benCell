@@ -20,7 +20,7 @@ class TransactionController extends Controller
     
 
     /**
-     * Show the form for creating a new resource.
+     * Show the form for creating a new resource.   
      */
     public function create()
     {   
@@ -55,14 +55,23 @@ class TransactionController extends Controller
     }
 
     // Simpan transaksi
-    $transaction = Transaction::create([
-        'type'       => $request->type,
-        'product_id' => $product->id,
-        'quantity'   => $request->quantity,
-        'amount'     => $request->amount,
-        'date'       => Carbon::parse($request->date),
-        'note'       => $request->note,
-    ]);
+    // ✅ Hitung ulang harga berdasarkan tipe transaksi
+$unitPrice = $request->type === 'income'
+    ? $product->sell_price   // income → harga jual
+    : $product->cost_price;  // expense → harga beli
+
+$totalAmount = $unitPrice * $request->quantity;
+
+// Simpan transaksi dengan amount yang sudah dihitung ulang
+$transaction = Transaction::create([
+    'type'       => $request->type,
+    'product_id' => $product->id,
+    'quantity'   => $request->quantity,
+    'amount'     => $totalAmount, // ⬅️ bukan dari input lagi
+    'date'       => Carbon::parse($request->date),
+    'note'       => $request->note,
+]);
+
 
     // Update stok
     if ($request->type === 'income') {

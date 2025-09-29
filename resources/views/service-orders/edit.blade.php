@@ -43,6 +43,7 @@
         </div>
 
         <button class="btn btn-success">Update</button>
+        <a href="{{ route('service-orders.index') }}" class="btn btn-secondary">Kembali</a>
     </form>
 </div>
 @endsection

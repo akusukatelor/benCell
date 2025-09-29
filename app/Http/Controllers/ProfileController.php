@@ -65,7 +65,7 @@ class ProfileController extends Controller
 
     public function show()
     {
-        return view('profile.show', ['user' => Auth::user()]);
+        return view('profile.edit', ['user' => Auth::user()]);
     }
 
     public function destroy(): RedirectResponse

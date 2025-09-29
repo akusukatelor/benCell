@@ -36,5 +36,6 @@
   </div>
 
   <button class="btn btn-success">Simpan</button>
+  <a href="{{ route('products.index') }}" class="btn btn-secondary">Kembali</a>
 </form>
 @endsection

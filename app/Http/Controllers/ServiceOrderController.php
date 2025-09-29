@@ -10,7 +10,7 @@ class ServiceOrderController extends Controller
     public function index()
     {
         // Ambil semua data service order
-        $serviceOrders = ServiceOrder::latest()->get();
+        $serviceOrders = ServiceOrder::latest()->paginate(10);
 
         // Lempar ke view
         return view('service-orders.index', compact('serviceOrders'));

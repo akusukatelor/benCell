@@ -58,7 +58,10 @@
         </tbody>
     </table>
     
-    {{-- Pagination (add to controller: ->paginate(10) instead of ->get() --}}
-    {{ $transactions->links() }}
+    {{-- Pagination (add to controller: ->paginate(10) instead of ->get()) --}}
+   <div class="d-flex justify-content-center">
+    {{ $transactions->links('pagination::bootstrap-5') }}
+</div>
+
 </div>
 @endsection

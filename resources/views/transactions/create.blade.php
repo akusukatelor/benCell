@@ -72,6 +72,7 @@
         </div>
 
         <button type="submit" class="btn btn-success">Simpan</button>
+        <a href="{{ route('transactions.index') }}" class="btn btn-secondary">Kembali</a>
     </form>
 </div>
 
