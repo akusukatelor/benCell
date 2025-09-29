@@ -5,7 +5,13 @@
 @section('content')
 <div class="container">
     <h1>Daftar Produk</h1>
-    <a href="{{ route('products.create') }}" class="btn btn-primary mb-3">Tambah Produk</a>
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <a href="{{ route('products.create') }}" class="btn btn-primary">Tambah Produk</a>
+        <form method="GET" action="{{ route('products.index') }}" class="d-flex">
+            <input type="text" name="search" class="form-control me-2" placeholder="Cari nama produk..." value="{{ request('search') }}">
+            <button type="submit" class="btn btn-outline-secondary">Cari</button>
+        </form>
+    </div>
 
     <table class="table table-bordered">
         <thead>
@@ -20,6 +26,11 @@
         </thead>
         <tbody>
         @foreach($products as $p)
+        @if($products->isEmpty())
+    <tr>
+        <td colspan="6" class="text-center">Tidak ada produk ditemukan.</td>
+    </tr>
+@endif
             <tr>
                 <td>{{ $p->name }}</td>
                 <td>{{ $p->category->name ?? '-' }}</td>
