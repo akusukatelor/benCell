@@ -54,13 +54,14 @@ class TransactionController extends Controller
             ]);
     }
 
-    // Simpan transaksi
-    // ✅ Hitung ulang harga berdasarkan tipe transaksi
-$unitPrice = $request->type === 'income'
-    ? $product->sell_price   // income → harga jual
-    : $product->cost_price;  // expense → harga beli
-
-$totalAmount = $unitPrice * $request->quantity;
+    if ($request->type === 'income') {
+    // income → selalu hitung ulang di backend
+    $unitPrice = $product->sell_price;
+    $totalAmount = $unitPrice * $request->quantity;
+} else {
+    // expense → pakai amount dari input (sudah dihitung di frontend)
+    $totalAmount = $request->amount;
+}
 
 // Simpan transaksi dengan amount yang sudah dihitung ulang
 $transaction = Transaction::create([
