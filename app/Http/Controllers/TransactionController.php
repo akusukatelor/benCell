@@ -6,17 +6,36 @@ use App\Models\Transaction;
 use App\Models\Product;
 use Illuminate\Http\Request;
 use Carbon\Carbon;
+use Illuminate\Database\Eloquent\Collection;
 
 class TransactionController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
-    public function index()
-    {
-        $transactions = Transaction::with('product')->latest()->paginate(10);  // Paginate instead of get()
-        return view('transactions.index', compact('transactions'));
+    public function index(Request $request)
+{
+    // Mulai dari query builder, belum diambil datanya
+    $query = Transaction::with('product');
+
+    // Jika ada parameter search, filter berdasarkan nama produk
+    if ($request->has('search') && !empty($request->search)) {
+        $query->whereHas('product', function ($q) use ($request) {
+            $q->where('name', $request->search); // exact match
+        });
     }
+
+    // Ambil hasil akhir dengan paginate
+    $transactions = $query->paginate(10);
+
+    // Agar parameter search tetap ada di link pagination
+    if ($request->has('search')) {
+        $transactions->appends(['search' => $request->search]);
+    }
+
+    return view('transactions.index', compact('transactions'));
+}
+
     
 
     /**

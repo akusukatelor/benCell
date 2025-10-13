@@ -3,10 +3,17 @@
 @section('title', 'Transaksi')
 
 @section('content')
-<div class="container">
-    <h1 class="mb-3">Daftar Transaksi</h1>
-    <a href="{{ route('transactions.create') }}" class="btn btn-primary mb-3">Tambah Transaksi</a>
-    
+<h1 class="mb-3">Daftar Transaksi</h1>
+
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <a href="{{ route('transactions.create') }}" class="btn btn-primary">Tambah Transaksi</a>
+    <form method="GET" action="{{ route('transactions.index') }}" class="d-flex">
+        <input type="text" name="search" class="form-control me-2" placeholder="Cari nama produk..." value="{{ request('search') }}">
+        <button type="submit" class="btn btn-outline-secondary">Cari</button>
+    </form>
+</div>
+
+
     @if (session('success'))
         <div class="alert alert-success">{{ session('success') }}</div>
     @endif
