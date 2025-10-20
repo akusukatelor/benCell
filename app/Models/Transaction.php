@@ -12,6 +12,7 @@ class Transaction extends Model
     protected $fillable = [
         'type',       // income | expense
         'product_id', // nullable
+        'service_order_id',
         'amount',
         'quantity',
         'note',
@@ -27,21 +28,27 @@ class Transaction extends Model
     {
         return $this->belongsTo(Product::class);
     }
+    
+    public function serviceOrder()
+    {
+    return $this->belongsTo(ServiceOrder::class);
+    }
+
 
     // Enhanced accessor for 'total' (dynamic based on type and product)
-    public function getTotalAttribute()
-    {
-        if ($this->type === 'income' && $this->product) {
-            // For income (e.g., sales): quantity * sell_price
-            return $this->quantity * ($this->product->sell_price ?? $this->amount);
-        } elseif ($this->type === 'expense' && $this->product) {
-            // For expense (e.g., purchases): quantity * buy_price or just amount
-            return $this->quantity * ($this->product->buy_price ?? $this->amount);
-        }
-        
-        // Fallback: just amount (or 0 if null)
-        return $this->amount ?? 0;
+   public function getTotalAttribute()
+{
+    if ($this->type === 'income' && $this->product) {
+        return $this->quantity * ($this->product->sell_price ?? $this->amount);
+    } elseif ($this->type === 'expense' && $this->product) {
+        return $this->quantity * ($this->product->cost_price ?? $this->amount); // <-- ganti buy_price -> cost_price
+    } elseif ($this->type === 'income_service') {
+        return $this->amount; // langsung pakai amount
     }
+
+    return $this->amount ?? 0;
+}
+
 
     // Optional: Accessor for formatted total (e.g., for direct use in views)
     public function getFormattedTotalAttribute()

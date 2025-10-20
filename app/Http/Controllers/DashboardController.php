@@ -18,11 +18,15 @@ class DashboardController extends Controller
             ->whereMonth('date', now()->month)
             ->whereYear('date', now()->year)
             ->sum('amount');
+        $incomeThisMonth = Transaction::whereIn('type', ['income', 'income_service'])
+            ->whereMonth('date', now()->month)
+            ->whereYear('date', now()->year)
+            ->sum('amount');
         $expenseThisMonth = Transaction::where('type', 'expense')
             ->whereMonth('date', now()->month)
             ->whereYear('date', now()->year)
             ->get()
-            ->sum->total;
+            ->sum('amount');
         $recentService = ServiceOrder::orderByDesc('created_at')->take(5)->get();
 
         return view('dashboard', compact(

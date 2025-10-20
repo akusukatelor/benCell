@@ -21,7 +21,7 @@
             </tr>
         </thead>
         <tbody>
-            @forelse($serviceOrders as $order)
+            @forelse( $serviceOrders as $order)
             <tr>
                 <td>{{ $order->id }}</td>
                 <td>{{ $order->customer_name }}</td>

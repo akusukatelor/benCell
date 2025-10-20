@@ -24,9 +24,12 @@
             <select name="type" id="type" class="form-control" required>
                 <option value="">Pilih Tipe</option>
                 <option value="income">Income (Penjualan - Kurangi Stok)</option>
+                 <option value="income_service">Income (Penjualan - Servis)</option>
                 <option value="expense">Expense (Pembelian - Tambah Stok)</option>
             </select>
         </div>
+
+        
 
         <div class="form-group mb-2">
             <label for="product_name">Produk</label>
@@ -44,18 +47,31 @@
             </select>
         </div>
 
-        <div class="form-group mb-2">
-    <label for="quantity">Jumlah (Quantity)</label>
-    <input type="number" name="quantity" id="quantity" 
-           class="form-control @error('quantity') is-invalid @enderror"
-           required min="1" value="{{ old('quantity', 1) }}">
-
-    @error('quantity')
-        <div class="invalid-feedback">
-            {{ $message }}
+        <div class="form-group mb-2" id="service_div" style="display:none;">
+            <label for="service_order_id">Service Order</label>
+            <select name="service_order_id" id="service_order_id" class="form-control">
+                <option value="">Pilih Service Order Pending</option>
+                @foreach($serviceOrders as $order)
+                    <option value="{{ $order->id }}" data-estimated-cost="{{ $order->estimated_cost }}">
+                        #{{ $order->id }} - {{ $order->customer_name }} (Rp {{ number_format($order->estimated_cost,0,',','.') }})
+                    </option>
+                @endforeach
+            </select>
         </div>
-    @enderror
-</div>
+
+
+        <div class="form-group mb-2" id="quantity_div">
+            <label for="quantity">Jumlah (Quantity)</label>
+            <input type="number" name="quantity" id="quantity" 
+                class="form-control @error('quantity') is-invalid @enderror"
+                required min="1" value="{{ old('quantity', 1) }}">
+
+            @error('quantity')
+                <div class="invalid-feedback">
+                    {{ $message }}
+                </div>
+            @enderror
+        </div>
 
 
         <div class="form-group mb-2">
@@ -77,18 +93,41 @@
 </div>
 
 <script>
+    const typeSelect = document.getElementById('type');
+    const productSelect = document.getElementById('product_name');
+    const quantityInput = document.getElementById('quantity');
+    const amountInput = document.getElementById('amount');
+    const amountLabel = document.getElementById('amount-label');
+    const amountHelp = document.getElementById('amount-help');
+    const serviceDiv = document.getElementById('service_div');
+    const serviceSelect = document.getElementById('service_order_id');
+    function toggleType() {
+    const quantityDiv = document.getElementById('quantity_div');
+
+    if(typeSelect.value === 'income_service') {
+        serviceDiv.style.display = 'block';
+        productSelect.disabled = true;
+        quantityInput.value = 1;
+        quantityDiv.style.display = 'none'; // hide quantity
+        if(serviceSelect.selectedOptions[0]){
+            amountInput.value = parseFloat(serviceSelect.selectedOptions[0].dataset.estimatedCost);
+        }
+    } else {
+        serviceDiv.style.display = 'none';
+        productSelect.disabled = false;
+        quantityDiv.style.display = 'block'; // show quantity
+        calculateAmount();
+    }
+}
+
+
     function calculateAmount() {
-        const typeSelect = document.getElementById('type');
-        const productSelect = document.getElementById('product_name');
-        const quantityInput = document.getElementById('quantity');
-        const amountInput = document.getElementById('amount');
-        const amountLabel = document.getElementById('amount-label');
-        const amountHelp = document.getElementById('amount-help');
 
         const type = typeSelect.value;
         const selectedOption = productSelect.selectedOptions[0];
 
         let price = 0;
+
 
         if (type === 'income' && selectedOption) {
             price = parseFloat(selectedOption.getAttribute('data-sell-price') || 0);
@@ -108,6 +147,13 @@
 
 
     // Event listener
+    typeSelect.addEventListener('change', function(){
+    toggleType();
+    calculateAmount();
+    });
+    productSelect.addEventListener('change', calculateAmount);
+    quantityInput.addEventListener('input', calculateAmount);
+    serviceSelect.addEventListener('change', calculateAmount);
     document.getElementById('type').addEventListener('change', calculateAmount);
     document.getElementById('product_name').addEventListener('change', calculateAmount);
     document.getElementById('quantity').addEventListener('input', calculateAmount);
@@ -119,6 +165,7 @@
     });
 
     // Jalankan saat halaman pertama kali load
+    toggleType();
     calculateAmount();
 </script>
 

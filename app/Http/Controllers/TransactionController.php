@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Transaction;
 use App\Models\Product;
+use App\Models\ServiceOrder;
 use Illuminate\Http\Request;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Collection;
@@ -26,7 +27,9 @@ class TransactionController extends Controller
     }
 
     // Ambil hasil akhir dengan paginate
-    $transactions = $query->paginate(10);
+    $transactions = Transaction::with(['product', 'serviceOrder'])
+                                ->orderBy('date', 'desc')
+                                ->paginate(10);
 
     // Agar parameter search tetap ada di link pagination
     if ($request->has('search')) {
@@ -44,26 +47,53 @@ class TransactionController extends Controller
     public function create()
     {   
          $products = Product::all();
-        return view('transactions.create', compact('products'));
+        $serviceOrders = ServiceOrder::where('status', 'pending')->get();
+        return view('transactions.create', compact('products','serviceOrders'));
     }
 
     /**
-     * Store a newly created resource in storage.
+     * Store a newly created resource in storage
      */
-    public function store(Request $request)
+   public function store(Request $request)
 {
     $request->validate([
-        'type'   => 'required|in:income,expense',
-        'product_name' => 'required|string|exists:products,name',
-        'quantity' => 'required|integer|min:1',
-        'amount' => 'required|numeric|min:0',
-        'date'   => 'required|date',
-        'note'   => 'nullable|string|max:255',
+        'type' => 'required|in:income,expense,income_service',
+        'product_name' => $request->type !== 'income_service' 
+                            ? 'required|string|exists:products,name' 
+                            : 'nullable',
+        'service_order_id' => $request->type === 'income_service' 
+                                ? 'required|exists:service_orders,id' 
+                                : 'nullable|exists:service_orders,id',
+        'quantity' => $request->type !== 'income_service' ? 'required|integer|min:1' : 'nullable',
+        'amount' => $request->type !== 'income_service' ? 'required|numeric|min:0' : 'nullable',
+        'date' => 'required|date',
+        'note' => 'nullable|string|max:255',
     ]);
 
+    if ($request->type === 'income_service') {
+        $serviceOrder = ServiceOrder::findOrFail($request->service_order_id);
+
+        $transaction = Transaction::create([
+            'type' => 'income_service',
+            'product_id' => null,
+            'service_order_id' => $serviceOrder->id,
+            'quantity' => 1,
+            'amount' => $serviceOrder->estimated_cost,
+            'date' => now(),
+            'note' => $request->note,
+        ]);
+
+        // Update status service order menjadi "selesai"
+        $serviceOrder->update(['status' => 'selesai']);
+
+        return redirect()
+            ->route('transactions.index')
+            ->with('success', "Transaksi servis #{$serviceOrder->id} berhasil ditambahkan.");
+    }
+
+    // ===== Hanya untuk tipe income/expense produk =====
     $product = Product::where('name', $request->product_name)->firstOrFail();
 
-    // 🔴 Cek stok dulu kalau type income
     if ($request->type === 'income' && $product->stock < $request->quantity) {
         return redirect()
             ->back()
@@ -74,24 +104,21 @@ class TransactionController extends Controller
     }
 
     if ($request->type === 'income') {
-    // income → selalu hitung ulang di backend
-    $unitPrice = $product->sell_price;
-    $totalAmount = $unitPrice * $request->quantity;
-} else {
-    // expense → pakai amount dari input (sudah dihitung di frontend)
-    $totalAmount = $request->amount;
+    $totalAmount = $product->sell_price * $request->quantity;
+} elseif ($request->type === 'expense') {
+    $totalAmount = $product->cost_price * $request->quantity; // ⬅️ hitung total expense
 }
 
-// Simpan transaksi dengan amount yang sudah dihitung ulang
-$transaction = Transaction::create([
-    'type'       => $request->type,
-    'product_id' => $product->id,
-    'quantity'   => $request->quantity,
-    'amount'     => $totalAmount, // ⬅️ bukan dari input lagi
-    'date'       => Carbon::parse($request->date),
-    'note'       => $request->note,
-]);
 
+    $transaction = Transaction::create([
+        'type' => $request->type,
+        'product_id' => $product->id,
+        'service_order_id' => null,
+        'quantity' => $request->quantity,
+        'amount' => $totalAmount,
+        'date' => now(),
+        'note' => $request->note,
+    ]);
 
     // Update stok
     if ($request->type === 'income') {
@@ -104,6 +131,8 @@ $transaction = Transaction::create([
         ->route('transactions.index')
         ->with('success', "Transaksi {$transaction->type} berhasil ditambahkan.");
 }
+
+
 
     /**
      * Show the form for editing the specified resource.

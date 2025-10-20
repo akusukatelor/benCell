@@ -28,10 +28,10 @@ class ServiceOrderController extends Controller
             'customer_phone'  => 'required|string|max:20',
             'device'          => 'required|string|max:255',
             'problem'         => 'required|string|max:500',
-            'status'          => 'required|string|max:50',
             'estimated_cost'  => 'required|numeric|min:0',
         ]);
 
+        $validated['status'] = 'pending';
         ServiceOrder::create($request->all());
 
         return redirect()->route('service-orders.index')->with('success', 'Service order berhasil ditambahkan.');
@@ -49,7 +49,6 @@ class ServiceOrderController extends Controller
             'customer_phone'  => 'required|string|max:20',
             'device'          => 'required|string|max:255',
             'problem'         => 'required|string|max:500',
-            'status'          => 'required|string|max:50',
             'estimated_cost'  => 'required|numeric|min:0',
         ]);
 

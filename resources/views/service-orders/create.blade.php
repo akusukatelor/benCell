@@ -19,14 +19,6 @@
             <label>Keluhan</label>
             <input type="text" name="problem" class="form-control" required>
         </div>
-        <div class="form-group mb-2">
-            <label>Status</label>
-            <select name="status" class="form-control">
-                <option value="pending">Pending</option>
-                <option value="proses">Proses</option>
-                <option value="selesai">Selesai</option>
-            </select>
-        </div>
         <div class="form-group">
             <label for="device">Device</label>
             <input type="text" name="device" id="device" class="form-control" required>

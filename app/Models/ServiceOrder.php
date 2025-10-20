@@ -23,4 +23,10 @@ class ServiceOrder extends Model
         'estimated_cost' => 'decimal:2',
         'final_cost' => 'decimal:2',
     ];
+
+    public function transaction()
+    {
+    return $this->hasOne(Transaction::class);
+    }
+
 }
