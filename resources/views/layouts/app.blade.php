@@ -68,6 +68,45 @@
             background-color: white !important; /* Card tetap white untuk kontras */
             box-shadow: 0 0 1px rgba(0,0,0,.125), 0 1px 3px rgba(0,0,0,.2) !important;
         }
+         .main-sidebar {
+        background-color: #ffffff !important;
+        color: #333;
+    }
+
+    .main-sidebar .nav-link {
+        color: #333 !important;
+        font-weight: 500;
+        border-radius: 8px;
+        margin: 2px 8px;
+        transition: 0.2s;
+    }
+
+    /* Hover effect */
+    .main-sidebar .nav-link:hover {
+        background-color: #e6f0ff !important;
+        color: #007bff !important;
+    }
+
+    /* Active link — menu yang diklik */
+    .main-sidebar .nav-item > .nav-link.active {
+        background-color: #d9e8ff !important; /* biru muda */
+        color: #007bff !important; /* teks biru */
+        font-weight: 600;
+        box-shadow: inset 0 0 0 1px #007bff33;
+    }
+
+    /* Warna ikon aktif */
+    .main-sidebar .nav-item > .nav-link.active i {
+        color: #007bff !important;
+    }
+
+    /* Branding header */
+    .brand-link {
+        background-color: #f8f9fa !important;
+        border-bottom: 1px solid #e0e0e0;
+        color: #007bff !important;
+        font-weight: bold;
+    }
     </style>
     @endguest
 </head>
@@ -120,7 +159,7 @@
 
   <!-- Sidebar -->
   @auth
-  <aside class="main-sidebar sidebar-dark-primary elevation-4">
+  <aside class="main-sidebar sidebar-light elevation-4">
     <a href="{{ route('dashboard') }}" class="brand-link">
       <span class="brand-text font-weight-light">BEN CELL</span>
     </a>
@@ -129,39 +168,40 @@
         <ul class="nav nav-pills nav-sidebar flex-column">
 
           <li class="nav-item">
-            <a href="{{ route('dashboard') }}" class="nav-link">
-              <i class="nav-icon fas fa-tachometer-alt"></i>
-              <p>Dashboard</p>
-            </a>
-          </li>
+  <a href="{{ route('dashboard') }}" class="nav-link {{ request()->routeIs('dashboard') ? 'active' : '' }}">
+    <i class="nav-icon fas fa-tachometer-alt"></i>
+    <p>Dashboard</p>
+  </a>
+</li>
 
-          <li class="nav-item">
-            <a href="{{ route('products.index') }}" class="nav-link">
-              <i class="nav-icon fas fa-box"></i>
-              <p>Produk</p>
-            </a>
-          </li>
+<li class="nav-item">
+  <a href="{{ route('products.index') }}" class="nav-link {{ request()->routeIs('products.*') ? 'active' : '' }}">
+    <i class="nav-icon fas fa-box"></i>
+    <p>Produk</p>
+  </a>
+</li>
 
-          <li class="nav-item">
-            <a href="{{ route('categories.index') }}" class="nav-link">
-              <i class="nav-icon fas fa-tags"></i>
-              <p>Kategori</p>
-            </a>
-          </li>
+<li class="nav-item">
+  <a href="{{ route('categories.index') }}" class="nav-link {{ request()->routeIs('categories.*') ? 'active' : '' }}">
+    <i class="nav-icon fas fa-tags"></i>
+    <p>Kategori</p>
+  </a>
+</li>
 
-          <li class="nav-item">
-            <a href="{{ route('transactions.index') }}" class="nav-link">
-              <i class="nav-icon fas fa-money-bill-wave"></i>
-              <p>Transaksi</p>
-            </a>
-          </li>
+<li class="nav-item">
+  <a href="{{ route('transactions.index') }}" class="nav-link {{ request()->routeIs('transactions.*') ? 'active' : '' }}">
+    <i class="nav-icon fas fa-money-bill-wave"></i>
+    <p>Transaksi</p>
+  </a>
+</li>
 
-          <li class="nav-item">
-            <a href="{{ route('service-orders.index') }}" class="nav-link">
-              <i class="nav-icon fas fa-tools"></i>
-              <p>Pesanan Service</p>
-            </a>
-          </li>
+<li class="nav-item">
+  <a href="{{ route('service-orders.index') }}" class="nav-link {{ request()->routeIs('service-orders.*') ? 'active' : '' }}">
+    <i class="nav-icon fas fa-tools"></i>
+    <p>Pesanan Service</p>
+  </a>
+</li>
+
 
         </ul>
       </nav>
@@ -177,9 +217,7 @@
   </div>
 
   <!-- Footer -->
-  <footer class="main-footer text-center">
-    <strong>&copy; {{ date('Y') }} BEN CELL</strong>
-  </footer>
+  
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/jquery@3.6.0/dist/jquery.min.js"></script>
