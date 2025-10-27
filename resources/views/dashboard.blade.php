@@ -60,37 +60,181 @@
 
   <!-- Bisa ditambahkan tabel ringkasan service terbaru -->
   <div class="row mt-4">
-    <div class="col-12">
-      <div class="card">
-        <div class="card-header">
-          <h3 class="card-title">{{ $recentService->count()}} Pesanan Service Terbaru</h3>
-        </div>
-        <div class="card-body table-responsive p-0">
-          <table class="table table-hover text-nowrap">
-            <thead>
-              <tr>
-                <th>ID</th>
-                <th>Nama Customer</th>
-                <th>Device</th>
-                <th>Status</th>
-                <th>Tanggal</th>
-              </tr>
-            </thead>
-            <tbody>
-              @foreach($recentService as $service)
-              <tr>
-                <td>{{ $service->id }}</td>
-                <td>{{ $service->customer_name }}</td>
-                <td>{{ $service->device }}</td>
-                <td>{{ ucfirst($service->status) }}</td>
-                <td>{{ $service->created_at->format('d-m-Y') }}</td>
-              </tr>
-              @endforeach
-            </tbody>
-          </table>
-        </div>
+  <!-- Left: Chart Penjualan & Servis -->
+  <div class="col-lg-8">
+    <div class="card">
+      <div class="card-header d-flex justify-content-between align-items-center">
+        <h3 class="card-title">Tren Penjualan & Servis (6 bulan)</h3>
+        <span class="text-muted">Estimasi omzet next month: <strong>Rp {{ number_format($predNextMonth,0,',','.') }}</strong></span>
+      </div>
+      <div class="card-body">
+        <canvas id="salesChart" style="height:260px"></canvas>
+      </div>
+    </div>
+
+    <div class="card mt-3">
+      <div class="card-header">
+        <h3 class="card-title">Detail Penjualan Bulanan</h3>
+      </div>
+      <div class="card-body table-responsive p-0">
+        <table class="table table-sm">
+          <thead>
+           <tr>
+      <th>Bulan</th>
+      <th>Omzet</th>
+      <th>Laba / Rugi</th>
+      <th>Transaksi</th>
+      <th>Servis</th>
+    </tr>
+  </thead>
+  <tbody>
+    @foreach($months as $i => $m)
+      <tr>
+        <td>{{ $m }}</td>
+        <td>Rp{{ number_format($salesAmount[$i], 0, ',', '.') }}</td>
+        <td class="{{ $profitAmount[$i] < 0 ? 'text-danger' : 'text-success' }}">
+          Rp{{ number_format($profitAmount[$i], 0, ',', '.') }}
+        </td>
+        <td>{{ $salesCount[$i] }}</td>
+        <td>{{ $serviceCount[$i] }}</td>
+      </tr>
+            @endforeach
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- Right: Insights -->
+  <div class="col-lg-4">
+    <div class="card">
+      <div class="card-header"><h3 class="card-title">Top Produk Terlaris</h3></div>
+      <div class="card-body">
+        <ul class="list-group">
+          @forelse($topProducts as $p)
+            <li class="list-group-item d-flex justify-content-between align-items-center">
+              <div>
+                <strong>{{ $p['name'] }}</strong>
+                <div class="text-muted small">ID: {{ $p['product_id'] }}</div>
+              </div>
+              <span class="badge badge-primary badge-pill">{{ $p['total_qty'] }}</span>
+            </li>
+          @empty
+            <li class="list-group-item">Belum ada data produk</li>
+          @endforelse
+        </ul>
+      </div>
+    </div>
+
+    <div class="card mt-3">
+      <div class="card-header"><h3 class="card-title">Masalah Servis Terbanyak</h3></div>
+      <div class="card-body">
+        <ul class="list-group">
+          @forelse($topServiceProblems as $tp)
+            <li class="list-group-item d-flex justify-content-between">
+              <span class="text-truncate" style="max-width:200px">{{ $tp->problem }}</span>
+              <span class="text-muted">{{ $tp->cnt }}</span>
+            </li>
+          @empty
+            <li class="list-group-item">Belum ada data servis</li>
+          @endforelse
+        </ul>
+      </div>
+    </div>
+
+    <div class="card mt-3">
+      <div class="card-header"><h3 class="card-title">Quick Actions</h3></div>
+      <div class="card-body">
+        <a href="{{ route('service-orders.create') }}" class="btn btn-block btn-outline-primary mb-2">Tambah Service Order</a>
+        <a href="{{ route('transactions.create') }}" class="btn btn-block btn-primary">Tambah Transaksi</a>
       </div>
     </div>
   </div>
 </div>
+
+      </div>
+    </div>
+  </div>
+</div>
+
+@push('scripts')
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    const months = @json($months);
+    const amounts = @json($salesAmount);
+    const profitAmount = @json($profitAmount ?? []); 
+    const counts = @json($salesCount);
+    const serviceCounts = @json($serviceCount);
+
+
+    const ctx = document.getElementById('salesChart').getContext('2d');
+
+    const gradient = ctx.createLinearGradient(0, 0, 0, 300);
+    gradient.addColorStop(0, 'rgba(37,99,235,0.4)');
+    gradient.addColorStop(1, 'rgba(37,99,235,0.05)');
+
+    new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: months,
+            datasets: [
+                {
+                    type: 'line',
+                    label: 'Omzet (Rp)',
+                    data: amounts,
+                    yAxisID: 'y',
+                    tension: 0.3,
+                    borderColor: '#2563eb',
+                    backgroundColor: gradient,
+                    fill: true,
+                },
+                {
+                    type: 'bar',
+                    label: 'Profit / Rugi (Rp)',
+                    data: profitAmount,
+                    yAxisID: 'y',
+                    backgroundColor: profitAmount.map(value => value >= 0 ? '#22c55e' : '#ef4444'), // hijau = laba, merah = rugi
+                },
+                {
+                    type: 'bar',
+                    label: 'Transaksi',
+                    data: counts,
+                    yAxisID: 'y1',
+                    backgroundColor: '#93c5fd',
+                },
+                {
+                    type: 'bar',
+                    label: 'Service',
+                    data: serviceCounts,
+                    yAxisID: 'y1',
+                    backgroundColor: '#a7f3d0',
+                }
+            ]
+        },
+        options: {
+            interaction: { mode: 'index', intersect: false },
+            stacked: false,
+            scales: {
+                y: {
+                    type: 'linear',
+                    position: 'left',
+                    ticks: {
+                        callback: function(value) {
+                            return 'Rp ' + value.toLocaleString('id-ID');
+                        }
+                    }
+                },
+                y1: {
+                    type: 'linear',
+                    position: 'right',
+                    grid: { drawOnChartArea: false }
+                }
+            }
+        }
+    });
+});
+</script>
+@endpush
+
+
 @endsection

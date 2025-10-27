@@ -5,6 +5,9 @@ namespace App\Http\Controllers;
 use App\Models\Product;
 use App\Models\Transaction;
 use App\Models\ServiceOrder;
+use Illuminate\Http\Request;
+use Carbon\Carbon;
+use Illuminate\Support\Collection;
 
 class DashboardController extends Controller
 {
@@ -27,17 +30,108 @@ class DashboardController extends Controller
             ->whereYear('date', now()->year)
             ->get()
             ->sum('amount');
+        
+        $profitThisMonth = $incomeThisMonth - $expenseThisMonth;
         $recentService = ServiceOrder::orderByDesc('created_at')->take(5)->get();
 
-        return view('dashboard', compact(
-    'productsCount',
-    'totalStock',
-    'incomeThisMonth',
-    'expenseThisMonth',
-    'recentService'
-));
+        // ---------- Data untuk grafik: 6 bulan terakhir ----------
+        $months = collect();
+        $salesAmount = collect(); // omzet per bulan (income + income_service)
+        $profitAmount = collect();  // laba/rugi (income - expense)
+        $salesCount = collect();  // jumlah transaksi income per bulan
+        $serviceCount = collect(); // jumlah service per bulan
 
-        // Tambahkan 'productsCount' ke compact() — INI KUNCI PERBAIKANNYA!
-        return view('dashboard', compact('totalStock', 'productsCount', 'incomeThisMonth', 'expenseThisMonth', 'recentService'));
+        for ($i = 5; $i >= 0; $i--) {
+            $dt = Carbon::now()->subMonths($i);
+            $label = $dt->format('M Y'); // e.g. Oct 2025
+            $months->push($label);
+
+             // Omzet (income + income_service)
+            $income = Transaction::whereIn('type', ['income', 'income_service'])
+                ->whereMonth('date', $dt->month)
+                ->whereYear('date', $dt->year)
+                ->sum('amount');
+
+            // Pengeluaran (expense)
+            $expense = Transaction::where('type', 'expense')
+                ->whereMonth('date', $dt->month)
+                ->whereYear('date', $dt->year)
+                ->sum('amount');
+
+            $profit = $income - $expense;
+
+            $amount = Transaction::whereIn('type', ['income', 'income_service'])
+                ->whereMonth('date', $dt->month)
+                ->whereYear('date', $dt->year)
+                ->sum('amount');
+
+            $count = Transaction::whereIn('type', ['income', 'income_service'])
+                ->whereMonth('date', $dt->month)
+                ->whereYear('date', $dt->year)
+                ->count();
+
+            $svc = ServiceOrder::whereMonth('created_at', $dt->month)
+                ->whereYear('created_at', $dt->year)
+                ->count();
+
+            $salesAmount->push((float) $amount);
+            $salesCount->push((int) $count);
+            $profitAmount->push((float) $profit);
+            $serviceCount->push((int) $svc);
+        }
+
+        // ---------- Insight: top products & top service types ----------
+        // Top sold products by quantity (income transactions, grouped by product)
+        $topProducts = Transaction::with('product')
+            ->where('type', 'income')
+            ->selectRaw('product_id, SUM(quantity) as total_qty')
+            ->groupBy('product_id')
+            ->orderByDesc('total_qty')
+            ->limit(5)
+            ->get()
+            ->map(function($t){
+                return [
+                    'product_id' => $t->product_id,
+                    'name' => $t->product->name ?? 'Unknown',
+                    'total_qty' => (int) $t->total_qty
+                ];
+            });
+
+        // Top service device or common problem (if you have device or problem categorize)
+        $topServiceProblems = ServiceOrder::selectRaw('problem, COUNT(*) as cnt')
+            ->groupBy('problem')
+            ->orderByDesc('cnt')
+            ->limit(5)
+            ->get();
+
+        // ---------- Simple prediction: average monthly growth -> next month estimate ----------
+        // compute average monthly change of salesAmount (simple linear diff)
+        $arr = $salesAmount->toArray();
+        $deltas = [];
+        for ($i = 1; $i < count($arr); $i++) {
+            $deltas[] = $arr[$i] - $arr[$i-1];
+        }
+        $avgDelta = count($deltas) ? (array_sum($deltas) / count($deltas)) : 0;
+        $predNextMonth = max(0, end($arr) + $avgDelta); // prevent negative
+
+        return view('dashboard', [
+    'productsCount' => $productsCount,
+    'totalStock' => $totalStock,
+    'incomeThisMonth' => $incomeThisMonth,
+    'expenseThisMonth' => $expenseThisMonth,
+    'profitThisMonth' => $profitThisMonth,
+    'recentService' => $recentService,
+
+    // ubah semua collection ke array biasa
+    'months' => $months->toArray(),
+    'salesAmount' => $salesAmount->toArray(),
+    'profitAmount' => $profitAmount->toArray(),
+    'salesCount' => $salesCount->toArray(),
+    'serviceCount' => $serviceCount->toArray(),
+
+    'topProducts' => $topProducts,
+    'topServiceProblems' => $topServiceProblems,
+    'predNextMonth' => $predNextMonth,
+]);
     }
 }
