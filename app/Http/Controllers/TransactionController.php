@@ -14,28 +14,37 @@ class TransactionController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index(Request $request)
+public function index(Request $request)
 {
-    // Mulai dari query builder, belum diambil datanya
-    $query = Transaction::with('product');
+    // Ambil input pencarian dari query string
+    $search = $request->input('search');
 
-    // Jika ada parameter search, filter berdasarkan nama produk
-    if ($request->has('search') && !empty($request->search)) {
-        $query->whereHas('product', function ($q) use ($request) {
-            $q->where('name', $request->search); // exact match
+    // Mulai query dengan relasi yang dibutuhkan
+    $query = Transaction::with(['product', 'serviceOrder']);
+
+    // Jika user mengetik sesuatu di kolom pencarian
+    if (!empty($search)) {
+        $query->where(function ($q) use ($search) {
+            // Cari berdasarkan nama produk
+            $q->whereHas('product', function ($sub) use ($search) {
+                $sub->where('name', 'LIKE', '%' . $search . '%');
+            })
+            // Atau cari di tipe transaksi
+            ->orWhere('type', 'LIKE', '%' . $search . '%')
+            // Atau di catatan transaksi
+            ->orWhere('note', 'LIKE', '%' . $search . '%');
         });
     }
 
-    // Ambil hasil akhir dengan paginate
-    $transactions = Transaction::with(['product', 'serviceOrder'])
-                                ->orderBy('date', 'desc')
-                                ->paginate(10);
+    // Urutkan dan ambil hasilnya dengan pagination
+    $transactions = $query->orderBy('date', 'desc')->paginate(10);
 
-    // Agar parameter search tetap ada di link pagination
-    if ($request->has('search')) {
-        $transactions->appends(['search' => $request->search]);
+    // Tambahkan parameter search ke pagination links agar tidak hilang
+    if ($search) {
+        $transactions->appends(['search' => $search]);
     }
 
+    // Kirim data ke view
     return view('transactions.index', compact('transactions'));
 }
 
@@ -159,7 +168,7 @@ class TransactionController extends Controller
     $transaction->update($request->all());
 
     return redirect()->route('transactions.index')
-                     ->with('success', 'Transaksi berhasil diperbarui!');
+                    ->with('success', 'Transaksi berhasil diperbarui!');
 }
 
 
