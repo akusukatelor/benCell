@@ -69,6 +69,31 @@
       </div>
       <div class="card-body">
         <canvas id="salesChart" style="height:260px"></canvas>
+        <div class="mt-3 text-sm text-gray-600 text-center">
+@php
+    $lastProfit = end($profitAmount); // laba/rugi bulan ini
+    $diff = $predNextProfit - $lastProfit;
+
+    if ($lastProfit != 0) {
+        $percent = ($diff / abs($lastProfit)) * 100;
+    } else {
+        // kalau bulan ini nol, prediksi positif 100%, negatif -100%
+        $percent = $diff >= 0 ? 100 : -100;
+    }
+@endphp
+
+@if($predPercent > 0)
+    📈 <strong>Prediksi:</strong> Laba bulan depan diperkirakan naik sekitar 
+    <strong>{{ round($predPercent, 1) }}%</strong>.
+@elseif($predPercent < 0)
+    📉 <strong>Prediksi:</strong> Laba bulan depan diperkirakan turun sekitar 
+    <strong>{{ round(abs($predPercent), 1) }}%</strong>.
+@else
+    ➖ <strong>Prediksi:</strong> Laba bulan depan diperkirakan stabil dibanding bulan ini.
+@endif
+
+
+  </div>
       </div>
     </div>
 
@@ -148,7 +173,7 @@
         <a href="{{ route('service-orders.create') }}" class="btn btn-block btn-outline-primary mb-2">Tambah Service Order</a>
         <a href="{{ route('transactions.create') }}" class="btn btn-block btn-primary">Tambah Transaksi</a>
       </div>
-    </div>
+    </div>  
   </div>
 </div>
 
@@ -172,7 +197,7 @@ document.addEventListener('DOMContentLoaded', function () {
     const gradient = ctx.createLinearGradient(0, 0, 0, 300);
     gradient.addColorStop(0, 'rgba(37,99,235,0.4)');
     gradient.addColorStop(1, 'rgba(37,99,235,0.05)');
-
+ 
     new Chart(ctx, {
         type: 'bar',
         data: {
@@ -194,6 +219,15 @@ document.addEventListener('DOMContentLoaded', function () {
                     data: profitAmount,
                     yAxisID: 'y',
                     backgroundColor: profitAmount.map(value => value >= 0 ? '#22c55e' : '#ef4444'), // hijau = laba, merah = rugi
+                },
+                {
+                    type: 'line',
+                    label: 'Prediksi Laba (bulan depan)',
+                    data: [...profitAmount, {{ $predNextProfit }}],
+                    borderDash: [10,5],
+                    borderColor: '#16a34a',
+                    tension: 0.4,
+                    fill: false,
                 },
                 {
                     type: 'bar',

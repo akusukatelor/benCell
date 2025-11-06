@@ -114,12 +114,33 @@ class DashboardController extends Controller
         $avgDelta = count($deltas) ? (array_sum($deltas) / count($deltas)) : 0;
         $predNextMonth = max(0, end($arr) + $avgDelta); // prevent negative
 
+        // ---------- Prediksi Laba (profit) bulan depan ----------
+       $profitArr = $profitAmount->toArray();
+$growthRates = [];
+for($i=1; $i<count($profitArr); $i++) {
+    if($profitArr[$i-1] != 0) {
+        $growthRates[] = ($profitArr[$i] - $profitArr[$i-1]) / abs($profitArr[$i-1]);
+    }
+}
+// Rata-rata growth rate
+$avgGrowthRate = count($growthRates) ? array_sum($growthRates)/count($growthRates) : 0;
+
+// Prediksi laba bulan depan
+$lastProfit = end($profitArr);
+$predNextProfit = $lastProfit * (1 + $avgGrowthRate);
+$predPercent = $avgGrowthRate * 100; // langsung dalam %
+
+
+
         return view('dashboard', [
     'productsCount' => $productsCount,
     'totalStock' => $totalStock,
     'incomeThisMonth' => $incomeThisMonth,
     'expenseThisMonth' => $expenseThisMonth,
     'profitThisMonth' => $profitThisMonth,
+    'predNextMonth' => $predNextMonth,
+    'predNextProfit' => $predNextProfit,
+    'predPercent' => $predPercent,
     'recentService' => $recentService,
 
     // ubah semua collection ke array biasa
