@@ -97,37 +97,67 @@
       </div>
     </div>
 
-    <div class="card mt-3">
-      <div class="card-header">
-        <h3 class="card-title">Detail Penjualan Bulanan</h3>
-      </div>
-      <div class="card-body table-responsive p-0">
-        <table class="table table-sm">
-          <thead>
-           <tr>
-      <th>Bulan</th>
-      <th>Omzet</th>
-      <th>Laba / Rugi</th>
-      <th>Transaksi</th>
-      <th>Servis</th>
-    </tr>
-  </thead>
-  <tbody>
-    @foreach($months as $i => $m)
-      <tr>
-        <td>{{ $m }}</td>
-        <td>Rp{{ number_format($salesAmount[$i], 0, ',', '.') }}</td>
-        <td class="{{ $profitAmount[$i] < 0 ? 'text-danger' : 'text-success' }}">
-          Rp{{ number_format($profitAmount[$i], 0, ',', '.') }}
-        </td>
-        <td>{{ $salesCount[$i] }}</td>
-        <td>{{ $serviceCount[$i] }}</td>
-      </tr>
-            @endforeach
-          </tbody>
-        </table>
-      </div>
+    <div class="card mt-3 shadow-sm">
+    <div class="card-header bg-white border-bottom">
+        <h3 class="card-title mb-0">Detail Penjualan Bulanan</h3>
     </div>
+
+    <style>
+        /* Modern table style */
+        .table-modern th {
+            background: #f8fafc;
+            font-weight: 600;
+            font-size: 14px;
+        }
+
+        .table-modern td, .table-modern th {
+            padding: 14px 12px !important;
+            vertical-align: middle !important;
+        }
+
+        .table-modern tbody tr:hover {
+            background: #f1f5f9 !important;
+        }
+
+        /* Membatasi lebar kolom agar tabel tidak melebar */
+        .table-modern td {
+            max-width: 180px;
+            word-break: break-word;
+            white-space: normal;
+        }
+    </style>
+
+    <div class="card-body p-0">
+        <table class="table table-modern table-hover mb-0">
+            <thead>
+                <tr>
+                    <th>Bulan</th>
+                    <th>Omzet</th>
+                    <th>Laba / Rugi</th>
+                    <th class="text-center">Transaksi</th>
+                    <th class="text-center">Servis</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach($months as $i => $m)
+                <tr>
+                    <td class="fw-semibold">{{ $m }}</td>
+
+                    <td>Rp{{ number_format($salesAmount[$i], 0, ',', '.') }}</td>
+
+                    <td class="{{ $profitAmount[$i] < 0 ? 'text-danger fw-semibold' : 'text-success fw-semibold' }}">
+                        Rp{{ number_format($profitAmount[$i], 0, ',', '.') }}
+                    </td>
+
+                    <td class="text-center">{{ $salesCount[$i] }}</td>
+                    <td class="text-center">{{ $serviceCount[$i] }}</td>
+                </tr>
+                @endforeach
+            </tbody>
+        </table>
+    </div>
+</div>
+
   </div>
 
   <!-- Right: Insights -->
@@ -140,7 +170,6 @@
             <li class="list-group-item d-flex justify-content-between align-items-center">
               <div>
                 <strong>{{ $p['name'] }}</strong>
-                <div class="text-muted small">ID: {{ $p['product_id'] }}</div>
               </div>
               <span class="badge badge-primary badge-pill">{{ $p['total_qty'] }}</span>
             </li>
@@ -157,8 +186,8 @@
         <ul class="list-group">
           @forelse($topServiceProblems as $tp)
             <li class="list-group-item d-flex justify-content-between">
-              <span class="text-truncate" style="max-width:200px">{{ $tp->problem }}</span>
-              <span class="text-muted">{{ $tp->cnt }}</span>
+              <strong><span class="text-truncate" style="max-width:200px">{{ $tp->problem }}</span></strong>
+              <span class="badge badge-primary badge-pill">{{ $tp->cnt }}</span>
             </li>
           @empty
             <li class="list-group-item">Belum ada data servis</li>

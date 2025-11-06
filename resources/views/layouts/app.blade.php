@@ -157,11 +157,11 @@
   </nav>
   @endauth
 
-  <!-- Sidebar -->
+<!-- Sidebar -->
   @auth
   <aside class="main-sidebar sidebar-light elevation-4">
-    <a href="{{ route('dashboard') }}" class="brand-link">
-      <span class="brand-text font-weight-light">BEN CELL</span>
+    <a href="{{ route('dashboard') }}" class="brand-link text-center" style="padding: 10px 15px;">
+      <img src="{{ asset('img/bencell-logo.png') }}" alt="BenCell Logo" class="img-fluid" style="max-height: 40px; width: auto;">
     </a>
     <div class="sidebar">
       <nav class="mt-2">
