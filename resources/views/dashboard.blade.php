@@ -179,6 +179,27 @@
         </ul>
       </div>
     </div>
+   <div class="card mt-3">
+    <div class="card-header"><h3 class="card-title">Status Stock Produk</h3></div>
+    <div class="card-body">
+        <ul class="list-group">
+            @forelse($statusProducts as $p)
+                <li class="list-group-item d-flex justify-content-between align-items-center">
+                    <strong>{{ $p['name'] }}</strong>
+                    <span class="badge rounded-circle text-white" 
+                          style="background-color: {{ $p['color'] == 'danger' ? '#dc3545' : '#ffc107' }}; width: 30px; height: 30px; display: flex; align-items: center; justify-content: center;">
+                        {{ $p['stock'] }}
+                    </span>
+                </li>
+            @empty
+                <li class="list-group-item">Semua produk aman (stok > 3)</li>
+            @endforelse
+        </ul>
+    </div>
+</div>
+
+
+
 
     <div class="card mt-3">
       <div class="card-header"><h3 class="card-title">Masalah Servis Terbanyak</h3></div>

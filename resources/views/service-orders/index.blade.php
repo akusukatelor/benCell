@@ -44,7 +44,7 @@
                                             'ongoing' => 'primary',
                                             'done' => 'success',
                                             'cancelled' => 'danger',
-                                            default => 'secondary',
+                                            default => 'success',
                                         };
                                     @endphp
                                     <span class="badge bg-{{ $color }} px-3 py-2">

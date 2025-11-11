@@ -7,110 +7,81 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/admin-lte@3.2/dist/css/adminlte.min.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    @yield('style')
 
     <!-- CSS Override untuk Guest (Login/Register) - Hanya aktif jika belum login -->
     @guest
-    <style>
-        /* Force background biru muda di seluruh halaman untuk guest */
-        body.hold-transition,
-        body.hold-transition * {
-            background-color: #ecf0f5 !important; /* Biru muda default AdminLTE */
-            background-image: none !important; /* Hilangkan pattern jika ada */
-            color: inherit !important;
-        }
-        .wrapper {
-            display: flex !important;
-            flex-direction: column !important;
-            min-height: 100vh !important;
-            background-color: #ecf0f5 !important; /* Biru muda */
-            padding: 0 !important;
-            margin: 0 !important;
-        }
-        .content-wrapper {
-            margin-left: 0 !important; /* Hilangkan margin kiri dari sidebar */
-            margin-right: 0 !important;
-            width: 100% !important;
-            flex: 1 !important; /* Grow untuk isi ruang tengah */
-            background-color: #ecf0f5 !important; /* Biru muda, override white */
-            display: flex !important;
-            align-items: center !important;
-            justify-content: center !important;
-            padding: 0 !important;
-            min-height: auto !important;
-        }
-        .content-wrapper > section.content {
-            padding: 20px !important; /* Padding ringan */
-            margin: 0 auto !important;
-            width: 100% !important;
-            max-width: 400px !important;
-            background-color: transparent !important; /* Tidak tambah white */
-            box-shadow: none !important; /* Hilangkan shadow jika bikin white illusion */
-        }
-        /* Footer tetap tampil, background putih dengan border top */
-        .main-footer {
-            margin-left: 0 !important;
-            margin-right: 0 !important;
-            width: 100% !important;
-            flex-shrink: 0 !important;
-            background-color: #ffffff !important; /* Putih, kontras dengan biru muda */
-            border-top: 1px solid #dee2e6 !important; /* Border abu-abu tipis untuk pemisah */
-            color: #6c757d !important; /* Teks abu-abu agar terbaca */
-        }
-        .main-footer strong {
-            color: inherit !important;
-        }
-        /* Hide navbar untuk guest */
-        .main-header {
-            display: none !important;
-        }
-        /* Hilangkan white dari card login jika ada override */
-        .login-box .card {
-            background-color: white !important; /* Card tetap white untuk kontras */
-            box-shadow: 0 0 1px rgba(0,0,0,.125), 0 1px 3px rgba(0,0,0,.2) !important;
-        }
-         .main-sidebar {
-        background-color: #ffffff !important;
-        color: #333;
-    }
+<style>
 
-    .main-sidebar .nav-link {
-        color: #333 !important;
-        font-weight: 500;
-        border-radius: 8px;
-        margin: 2px 8px;
-        transition: 0.2s;
-    }
+/* ========== Background animasi gelombang ========== */
+body.login-mode {
+    margin: 0;
+    padding: 0;
+    height: 100vh;
+    background: url('{{ asset("img/gelombang.svg") }}') repeat;
+    background-size: cover;
+    animation: rotate 6s infinite alternate linear;
+    overflow: hidden;
+}
 
-    /* Hover effect */
-    .main-sidebar .nav-link:hover {
-        background-color: #e6f0ff !important;
-        color: #007bff !important;
-    }
 
-    /* Active link — menu yang diklik */
-    .main-sidebar .nav-item > .nav-link.active {
-        background-color: #d9e8ff !important; /* biru muda */
-        color: #007bff !important; /* teks biru */
-        font-weight: 600;
-        box-shadow: inset 0 0 0 1px #007bff33;
+/* Animasi background */
+@keyframes rotate {
+    100% {
+        background-position: 15% 50%;
     }
+}
 
-    /* Warna ikon aktif */
-    .main-sidebar .nav-item > .nav-link.active i {
-        color: #007bff !important;
-    }
+/* ========== Hilangkan elemen dashboard untuk guest ========== */
+.main-header,
+.main-sidebar,
+.main-footer {
+    display: none !important;
+}
 
-    /* Branding header */
-    .brand-link {
-        background-color: #f8f9fa !important;
-        border-bottom: 1px solid #e0e0e0;
-        color: #007bff !important;
-        font-weight: bold;
-    }
-    </style>
-    @endguest
+/* ========== Wrapper supaya tidak menutupi background ========== */
+.wrapper {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    width: 100vw;
+    margin: 0;
+    padding: 0;
+}
+
+.content-wrapper, section.content {
+    background: transparent !important;
+    box-shadow: none !important;
+    width: 100%;
+    height: 100%;
+     padding: 0 !important;
+    margin: 0 !important;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+/* ========== Login Box agar tetap rapih di tengah ========== */
+.login-box {
+    width: 100%;
+    max-width: 380px;
+    margin: 0;
+}
+
+.login-box .card {
+    background: #ffffff !important;
+    border-radius: 14px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.1) !important;
+    padding: 20px;
+    
+}
+
+</style>
+@endguest
+
 </head>
-<body class="hold-transition sidebar-mini">
+<body class="@guest login-mode @else hold-transition sidebar-mini @endguest">
 <div class="wrapper">
 
   <!-- Navbar -->

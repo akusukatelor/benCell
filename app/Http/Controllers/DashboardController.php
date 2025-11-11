@@ -97,6 +97,22 @@ class DashboardController extends Controller
                 ];
             });
 
+        // Produk dengan stok minimal 3 atau habis
+            // Produk dengan stok minimal 3 atau habis
+            $statusProducts = Product::where('stock', '<=', 3)
+                ->get()
+                ->map(function($p){
+                    $color = $p->stock <= 0 ? 'danger' : 'warning';
+                    return [
+                        'product_id' => $p->id,
+                        'name' => $p->name,
+                        'stock' => $p->stock,
+                        'color' => $color,
+                    ];
+                });
+
+
+
         // Top service device or common problem (if you have device or problem categorize)
         $topServiceProblems = ServiceOrder::selectRaw('problem, COUNT(*) as cnt')
             ->groupBy('problem')
@@ -151,6 +167,7 @@ $predPercent = $avgGrowthRate * 100; // langsung dalam %
     'serviceCount' => $serviceCount->toArray(),
 
     'topProducts' => $topProducts,
+    'statusProducts' => $statusProducts,
     'topServiceProblems' => $topServiceProblems,
     'predNextMonth' => $predNextMonth,
 ]);

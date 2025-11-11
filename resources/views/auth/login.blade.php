@@ -6,8 +6,9 @@
 <div class="login-box mx-auto">
     <div class="card card-outline card-primary">
         <div class="card-header text-center">
-            <b>Login</b>
+            <img src="{{ asset('img/bencell-logo.png') }}" alt="BenCell Logo" style="max-height: 40px;">
         </div>
+        <center><b>Login</b></center>
         <div class="card-body">
             <form method="POST" action="{{ route('login') }}">
                 @csrf
@@ -30,9 +31,6 @@
                 @endif
                 <button type="submit" class="btn btn-primary btn-block mt-3">Login</button>
             </form>
-            <p class="mt-2 text-center">
-                Belum punya akun? <a href="{{ route('register') }}">Register</a>
-            </p>
         </div>
     </div>
 </div>
