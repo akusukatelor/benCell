@@ -129,56 +129,61 @@ body.login-mode {
   @endauth
 
 <!-- Sidebar -->
-  @auth
+@auth
   <aside class="main-sidebar sidebar-light elevation-4">
     <a href="{{ route('dashboard') }}" class="brand-link text-center" style="padding: 10px 15px;">
       <img src="{{ asset('img/bencell-logo.png') }}" alt="BenCell Logo" class="img-fluid" style="max-height: 40px; width: auto;">
     </a>
+
     <div class="sidebar">
       <nav class="mt-2">
         <ul class="nav nav-pills nav-sidebar flex-column">
 
+          {{-- ====== Hanya Admin yang bisa lihat Dashboard ====== --}}
+          @role('admin')
           <li class="nav-item">
-  <a href="{{ route('dashboard') }}" class="nav-link {{ request()->routeIs('dashboard') ? 'active' : '' }}">
-    <i class="nav-icon fas fa-tachometer-alt"></i>
-    <p>Dashboard</p>
-  </a>
-</li>
+            <a href="{{ route('dashboard') }}" class="nav-link {{ request()->routeIs('dashboard') ? 'active' : '' }}">
+              <i class="nav-icon fas fa-tachometer-alt"></i>
+              <p>Dashboard</p>
+            </a>
+          </li>
+          @endrole
 
-<li class="nav-item">
-  <a href="{{ route('products.index') }}" class="nav-link {{ request()->routeIs('products.*') ? 'active' : '' }}">
-    <i class="nav-icon fas fa-box"></i>
-    <p>Produk</p>
-  </a>
-</li>
+          {{-- ====== Menu umum (bisa untuk semua role) ====== --}}
+          <li class="nav-item">
+            <a href="{{ route('products.index') }}" class="nav-link {{ request()->routeIs('products.*') ? 'active' : '' }}">
+              <i class="nav-icon fas fa-box"></i>
+              <p>Produk</p>
+            </a>
+          </li>
 
-<li class="nav-item">
-  <a href="{{ route('categories.index') }}" class="nav-link {{ request()->routeIs('categories.*') ? 'active' : '' }}">
-    <i class="nav-icon fas fa-tags"></i>
-    <p>Kategori</p>
-  </a>
-</li>
+          <li class="nav-item">
+            <a href="{{ route('categories.index') }}" class="nav-link {{ request()->routeIs('categories.*') ? 'active' : '' }}">
+              <i class="nav-icon fas fa-tags"></i>
+              <p>Kategori</p>
+            </a>
+          </li>
 
-<li class="nav-item">
-  <a href="{{ route('transactions.index') }}" class="nav-link {{ request()->routeIs('transactions.*') ? 'active' : '' }}">
-    <i class="nav-icon fas fa-money-bill-wave"></i>
-    <p>Transaksi</p>
-  </a>
-</li>
+          <li class="nav-item">
+            <a href="{{ route('transactions.index') }}" class="nav-link {{ request()->routeIs('transactions.*') ? 'active' : '' }}">
+              <i class="nav-icon fas fa-money-bill-wave"></i>
+              <p>Transaksi</p>
+            </a>
+          </li>
 
-<li class="nav-item">
-  <a href="{{ route('service-orders.index') }}" class="nav-link {{ request()->routeIs('service-orders.*') ? 'active' : '' }}">
-    <i class="nav-icon fas fa-tools"></i>
-    <p>Pesanan Service</p>
-  </a>
-</li>
-
+          <li class="nav-item">
+            <a href="{{ route('service-orders.index') }}" class="nav-link {{ request()->routeIs('service-orders.*') ? 'active' : '' }}">
+              <i class="nav-icon fas fa-tools"></i>
+              <p>Pesanan Service</p>
+            </a>
+          </li>
 
         </ul>
       </nav>
     </div>
   </aside>
-  @endauth
+@endauth
+
 
   <!-- Content Wrapper -->
   <div class="content-wrapper">

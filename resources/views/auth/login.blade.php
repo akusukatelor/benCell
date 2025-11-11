@@ -1,9 +1,9 @@
-@extends('layouts.app')
+@extends('layouts.guest')
 
 @section('title', 'Login')
 
 @section('content')
-<div class="login-box mx-auto">
+<div class="login-box">
     <div class="card card-outline card-primary">
         <div class="card-header text-center">
             <img src="{{ asset('img/bencell-logo.png') }}" alt="BenCell Logo" style="max-height: 40px;">
@@ -24,11 +24,6 @@
                         <span class="invalid-feedback">{{ $message }}</span>
                     @enderror
                 </div>
-                @if (session('status'))
-                    <div class="alert alert-success" role="alert">
-                        {{ session('status') }}
-                    </div>
-                @endif
                 <button type="submit" class="btn btn-primary btn-block mt-3">Login</button>
             </form>
         </div>

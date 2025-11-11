@@ -7,17 +7,23 @@ use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\TransactionController;
 use App\Http\Controllers\ServiceOrderController;
 use App\Http\Controllers\DashboardController;
+use Illuminate\Support\Facades\Auth;
 
 Route::get('/', function () {
-    return redirect()->route('dashboard');
+    return view('auth.login');
 });
 
 
+Route::get('/redirect', function () {})->middleware(['auth', 'role.redirect']);
+
+
 // Semua route ini harus login dulu
-Route::middleware(['auth'])->group(function () {
+Route::middleware(['auth', 'role:admin'])->group(function () {
     // Dashboard
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
+    });
 
+Route::middleware(['auth'])->group(function () {
     // Profile
     Route::get('/profile', [ProfileController::class, 'show'])->name('profile');
     Route::get('/profile/edit', [ProfileController::class, 'edit'])->name('profile.edit');
@@ -30,6 +36,7 @@ Route::middleware(['auth'])->group(function () {
     Route::resource('transactions', TransactionController::class);
     Route::resource('service-orders', ServiceOrderController::class);
 });
+
 
 // Route bawaan Breeze/Fortify (auth, register, login, dll)
 require __DIR__.'/auth.php';
