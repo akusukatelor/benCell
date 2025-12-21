@@ -7,6 +7,7 @@ use App\Models\Transaction;
 use App\Models\ServiceOrder;
 use Illuminate\Http\Request;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Collection;
 
 class DashboardController extends Controller
@@ -32,7 +33,10 @@ class DashboardController extends Controller
             ->sum('amount');
         
         $profitThisMonth = $incomeThisMonth - $expenseThisMonth;
-        $recentService = ServiceOrder::orderByDesc('created_at')->take(5)->get();
+        $recentService = ServiceOrder::where('status', 'pending')
+        ->orderByDesc('created_at')
+        ->take(5)
+        ->get();
 
         // ---------- Data untuk grafik: 6 bulan terakhir ----------
         $months = collect();
@@ -172,4 +176,44 @@ $predPercent = $avgGrowthRate * 100; // langsung dalam %
     'predNextMonth' => $predNextMonth,
 ]);
     }
+    public function getHistoricalData()
+{
+    // Ambil 12 bulan terakhir
+    $monthsData = Transaction::selectRaw('YEAR(date) as year, MONTH(date) as month,
+                SUM(CASE WHEN type IN ("income","income_service") THEN amount ELSE 0 END) as omzet,
+                SUM(CASE WHEN type IN ("income","income_service") THEN amount ELSE 0 END) 
+                    - SUM(CASE WHEN type="expense" THEN amount ELSE 0 END) as profit,
+                COUNT(CASE WHEN type IN ("income","income_service") THEN id END) as sales_count')
+            ->where('date', '>=', now()->subMonths(12))
+            ->groupBy('year','month')
+            ->orderBy('year')
+            ->orderBy('month')
+            ->get()
+            ->map(function($row){
+                $serviceCount = ServiceOrder::whereYear('created_at',$row->year)
+                                ->whereMonth('created_at',$row->month)->count();
+                return [
+                    'year' => $row->year,
+                    'month' => $row->month,
+                    'profit' => (float)$row->profit,
+                    'omzet' => (float)$row->omzet,
+                    'sales_count' => (int)$row->sales_count,
+                    'service_count' => $serviceCount
+                ];
+            });
+
+    return $monthsData;
+}
+    public function predictProfit()
+{
+    $historicalData = $this->getHistoricalData();
+    $jsonData = json_encode($historicalData);
+
+    $python = base_path('predict_profit.py');
+    $command = "python3 {$python} '" . escapeshellarg($jsonData) . "'";
+    $predictedProfit = shell_exec($command);
+
+    return (float) $predictedProfit;
+}
+
 }

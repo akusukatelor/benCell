@@ -82,15 +82,9 @@
     }
 @endphp
 
-@if($predPercent > 0)
-    📈 <strong>Prediksi:</strong> Laba bulan depan diperkirakan naik sekitar 
-    <strong>{{ round($predPercent, 1) }}%</strong>.
-@elseif($predPercent < 0)
-    📉 <strong>Prediksi:</strong> Laba bulan depan diperkirakan turun sekitar 
-    <strong>{{ round(abs($predPercent), 1) }}%</strong>.
-@else
-    ➖ <strong>Prediksi:</strong> Laba bulan depan diperkirakan stabil dibanding bulan ini.
-@endif
+📊 <strong>Prediksi Laba Bulan Depan:</strong> 
+Rp {{ number_format($predNextProfit,0,',','.') }}
+
 
 
   </div>

@@ -35,7 +35,7 @@ class ProductController extends Controller
     /**
      * Show the form for creating a new resource.
      */
-    public function create()
+    public function create()    
     {
         $categories = Category::all();
         return view('products.create', compact('categories'));

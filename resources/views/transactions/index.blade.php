@@ -41,6 +41,7 @@
                             <th>ID</th>
                             <th>Tipe</th>
                             <th>Produk / Pelanggan</th>
+                            <th>Kategori</th>
                             <th>Jumlah</th>
                             <th>Total</th>
                             <th>Catatan</th>
@@ -81,6 +82,7 @@
                                 @endif
                             </td>
 
+                            <td>{{ $transaction->product->category->name ?? '-' }}</td>
                             <td>{{ $transaction->quantity }}</td>
 
                             <td>Rp {{ number_format($transaction->amount, 0, ',', '.') }}</td>

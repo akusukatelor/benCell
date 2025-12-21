@@ -20,7 +20,8 @@ public function index(Request $request)
     $search = $request->input('search');
 
     // Mulai query dengan relasi yang dibutuhkan
-    $query = Transaction::with(['product', 'serviceOrder']);
+    // Tambahkan .category di belakang product (Nested Eager Loading)
+    $query = Transaction::with(['product.category', 'serviceOrder']);
 
     // Jika user mengetik sesuatu di kolom pencarian
     if (!empty($search)) {

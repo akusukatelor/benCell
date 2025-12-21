@@ -27,6 +27,7 @@
                 <table class="table align-middle mb-0">
                     <thead class="table-light">
                         <tr>
+                            <th>Sku</th>
                             <th>Nama</th>
                             <th>Kategori</th>
                             <th >Stok</th>
@@ -38,6 +39,7 @@
                     <tbody>
                         @forelse($products as $p)
                             <tr>
+                                <td class="fw-medium">{{ $p->sku }}</td>
                                 <td class="fw-medium">{{ $p->name }}</td>
                                 <td>{{ $p->category->name ?? '-' }}</td>
                                 <td>{{ $p->stock }}</td>
